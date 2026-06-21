@@ -1,0 +1,31 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Завантаження даних
+df = pd.read_csv("data/alerts.csv")
+
+df["start_time"] = pd.to_datetime(df["start_time"])
+df["date"] = df["start_time"].dt.date
+
+# Кількість тривог за день
+daily_alerts = df.groupby("date").size()
+
+# Пошук аномалій
+mean = daily_alerts.mean()
+std = daily_alerts.std()
+
+anomalies = daily_alerts[
+    daily_alerts > mean + 2 * std
+]
+
+print("Аномальні дні:")
+print(anomalies)
+
+# Візуалізація
+plt.figure(figsize=(12, 6))
+daily_alerts.plot()
+plt.title("Кількість повітряних тривог по днях")
+plt.xlabel("Дата")
+plt.ylabel("Кількість")
+plt.grid()
+plt.show()
